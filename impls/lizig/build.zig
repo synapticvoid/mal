@@ -4,6 +4,12 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    // Declare dependencies
+    const mvzr_dep = b.dependency("mvzr", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
     const name = b.option([]const u8, "name", "Executable name") orelse "step0_repl";
     const root_source_file = b.option([]const u8, "root_source_file", "Root source file") orelse "step0_repl.zig";
 
@@ -15,6 +21,9 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         }),
     });
+
+    // Add mvzr module to root module
+    exe.root_module.addImport("mvzr", mvzr_dep.module("mvzr"));
 
     b.installArtifact(exe);
 
